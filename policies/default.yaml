@@ -1,0 +1,16 @@
+# SupplyGuard default policy
+# Blocks confirmed malicious packages and highly suspicious behavior.
+# Requires human approval for moderately risky packages.
+
+block_threshold: 80       # score >= 80 → BLOCK
+approve_threshold: 40     # score >= 40 → APPROVE (human review required)
+metadata_timeout_ms: 3000
+
+# Flag custom --index-url / --registry overrides (score +60)
+flag_custom_registry: true
+
+# Flag git+https:// and GitHub URL installs (triggers GitHub stars check)
+flag_git_installs: true
+
+# Flag npx/bunx exec-mode installs (score +20, they execute immediately)
+flag_exec_commands: true

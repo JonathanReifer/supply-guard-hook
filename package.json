@@ -1,0 +1,15 @@
+{
+  "name": "supply-guard-hook",
+  "version": "0.1.0",
+  "description": "Supply chain attack protection hook for AI agent harnesses",
+  "module": "src/index.ts",
+  "type": "module",
+  "scripts": {
+    "hook": "bun src/hooks/SupplyGuard.hook.ts",
+    "review": "bun src/cli/review.ts",
+    "test": "bun test"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  }
+}

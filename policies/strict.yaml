@@ -1,0 +1,11 @@
+# SupplyGuard strict policy
+# Much lower thresholds — requires approval for anything with any risk signal.
+# Best for high-security environments or automated agents.
+
+block_threshold: 60       # score >= 60 → BLOCK
+approve_threshold: 20     # score >= 20 → APPROVE
+metadata_timeout_ms: 5000
+
+flag_custom_registry: true
+flag_git_installs: true
+flag_exec_commands: true

@@ -1,0 +1,6 @@
+Plans/
+MEMORY/
+node_modules/
+.env
+.env.*
+!.env.example

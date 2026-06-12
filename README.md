@@ -157,6 +157,36 @@ Edit `src/threats/popularPackages.ts`. These are used for typosquatting detectio
 - Use `supply-guard-proxy` for HTTP-level package download inspection
 - Review audit logs at `~/.supplyguard/logs/` regularly
 
+## As a Module (Programmatic Use)
+
+`SupplyChainHookModule` implements the `HookModule` interface from `llm-privacy-middleware`,
+allowing it to register into the unified hook pipeline alongside privacy and ATLAS scanners.
+
+```typescript
+import { SupplyChainHookModule } from "./supply-guard-hook/src/modules/index.js";
+
+// In your llm-privacy-middleware pipeline.ts:
+const pipeline = createDefaultHookPipeline();
+pipeline.register(new SupplyChainHookModule());
+```
+
+**Latency warning:** Metadata checks (package age, download counts) query the PyPI/npm
+registry and can take up to 3000ms. This exceeds the 500ms hook latency budget Claude Code
+expects. Two options:
+
+1. **Standalone hook (recommended):** Keep `SupplyGuard.hook.ts` as its own `PreToolUse`
+   entry in `settings.json` alongside the middleware hooks. Claude Code enforces each hook's
+   timeout independently — a slow supply-guard check doesn't affect the middleware pipeline.
+
+2. **Integrated module:** Register `SupplyChainHookModule` into the pipeline if you accept
+   the latency trade-off (e.g., the metadata checks are frequently cached after warmup).
+
+The `SupplyChainHookModule` only fires on `PreToolUse` events with `tool_name === "Bash"`.
+It is a no-op on `UserPromptSubmit` and `Stop`.
+
+See [llm_prompt_protection/QUICKSTART.md](../llm_prompt_protection/QUICKSTART.md) for
+full step-by-step setup of the four-project stack.
+
 ## License
 
 MIT

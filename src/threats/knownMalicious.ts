@@ -24,6 +24,7 @@ export const KNOWN_MALICIOUS: Partial<Record<Ecosystem, ThreatEntry[]>> = {
     { name: "pycryptodome3", reason: "Typosquat of pycryptodome — backdoor" },
     { name: "httpx-async", reason: "Typosquat of httpx — exfiltrates secrets" },
     { name: "ssh-import-id2", reason: "Typosquat of ssh-import-id — SSH key theft" },
+    { name: "requets", reason: "Typosquat of requests — credential harvester (transposed 's'/'t')" },
     { name: "aws-sdk", reason: "Wrong ecosystem — for pip this is a malicious package" },
   ],
   npm: [
@@ -48,5 +49,6 @@ export const KNOWN_MALICIOUS: Partial<Record<Ecosystem, ThreatEntry[]>> = {
     { name: "socketio", reason: "Typosquat of socket.io — exfiltrates secrets" },
     { name: "proxy-srv", reason: "Crypto miner bundled in postinstall" },
     { name: "mariadb-connection", reason: "Typosquat of mysql — credential stealer" },
+    { name: "lodahs", reason: "Typosquat of lodash — env var exfiltration (transposed 's'/'h')" },
   ],
 };

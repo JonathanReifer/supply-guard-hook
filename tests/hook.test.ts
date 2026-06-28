@@ -107,16 +107,26 @@ describe("Hook protocol — fail open", () => {
   });
 });
 
-describe("Hook protocol — typosquat (approve path)", () => {
-  it("asks for approval on typosquatted package", async () => {
+describe("Hook protocol — known malicious typosquats", () => {
+  it("blocks requets (known typosquat of requests)", async () => {
     const r = await runHook({
       tool_name: "Bash",
-      tool_input: { command: "pip install requets" }, // typo of requests
+      tool_input: { command: "pip install requets" },
     });
     const out = JSON.parse(r.stdout);
-    // Should be approve (ask), not block
-    expect(out.decision).toBe("ask");
-    expect(out.message).toContain("requets");
-    expect(r.exitCode).toBe(0);
+    expect(out.decision).toBe("block");
+    expect(out.reason).toContain("requets");
+    expect(r.exitCode).toBe(2);
+  });
+
+  it("blocks lodahs via bun (known typosquat of lodash)", async () => {
+    const r = await runHook({
+      tool_name: "Bash",
+      tool_input: { command: "bun add lodahs" },
+    });
+    const out = JSON.parse(r.stdout);
+    expect(out.decision).toBe("block");
+    expect(out.reason).toContain("lodahs");
+    expect(r.exitCode).toBe(2);
   });
 });

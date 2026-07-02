@@ -15,6 +15,7 @@ interface ScanFinding {
   description: string;
   severity: FindingSeverity;
   atlasTechnique?: string;
+  owaspCategory?: string;
   detail?: Record<string, unknown>;
 }
 
@@ -115,6 +116,7 @@ export class SupplyChainHookModule {
         description: r.recommendation,
         severity: r.decision === "block" ? ("block" as const) : ("warn" as const),
         atlasTechnique: "AML.T0010",
+        owaspCategory: "LLM03",
         detail: {
           package: r.package,
           ecosystem: r.ecosystem,

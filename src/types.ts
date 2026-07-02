@@ -49,6 +49,7 @@ export interface ThreatDB {
 
 export interface ClaudeHookInput {
   session_id?: string;
+  cwd?: string;
   tool_name: string;
   tool_input: Record<string, unknown>;
 }

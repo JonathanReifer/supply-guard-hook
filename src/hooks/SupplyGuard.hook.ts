@@ -16,6 +16,8 @@
 import { parse } from "../parser.ts";
 import { evaluateCommand, worstDecision, DEFAULT_POLICY } from "../evaluator.ts";
 import { logDecision } from "../audit.ts";
+import { emitLog, flushTelemetry } from "../telemetry/otel.ts";
+import { deriveProject } from "../project.ts";
 import type { ClaudeHookInput, ClaudeHookOutput } from "../types.ts";
 
 const STDIN_TIMEOUT_MS = 500;
@@ -91,6 +93,7 @@ async function main(): Promise<void> {
 
   const decision = worstDecision(results!);
   const sessionId = input!.session_id ?? null;
+  const project = deriveProject(input!.cwd);
 
   // Log every decision
   for (const result of results!) {
@@ -101,9 +104,30 @@ async function main(): Promise<void> {
       totalScore: result.totalScore,
       factors: result.factors,
       sessionId,
+      project,
       command,
+      atlasTechnique: "AML.T0010",
+      owaspCategory: "LLM03",
     });
   }
+
+  await flushTelemetry(
+    Promise.all(
+      results!.map((result) =>
+        emitLog({
+          session_id: sessionId ?? undefined,
+          project,
+          harness: "claude-code",
+          scanner_id: `supply-chain/${result.ecosystem}`,
+          event_type: "package_install",
+          decision: result.decision === "approve" ? "ask" : result.decision,
+          severity: result.decision === "block" ? "block" : "warn",
+          atlas_technique: "AML.T0010",
+          owasp_category: "LLM03",
+        })
+      )
+    ).then(() => undefined)
+  );
 
   if (decision === "allow") {
     allow();

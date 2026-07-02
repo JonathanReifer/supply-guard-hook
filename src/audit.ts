@@ -13,7 +13,10 @@ interface AuditEvent {
   totalScore: number;
   factors: RiskFactor[];
   sessionId: string | null;
+  project?: string;
   command: string;
+  atlasTechnique?: string;
+  owaspCategory?: string;
 }
 
 function logPath(): string {

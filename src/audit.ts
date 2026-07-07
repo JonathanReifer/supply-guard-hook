@@ -17,6 +17,9 @@ interface AuditEvent {
   command: string;
   atlasTechnique?: string;
   owaspCategory?: string;
+  // Set when the evaluator errored and the hook failed open (allow) despite it.
+  degraded?: boolean;
+  degradedReason?: string;
 }
 
 function logPath(): string {

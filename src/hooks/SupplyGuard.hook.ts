@@ -85,7 +85,34 @@ async function main(): Promise<void> {
   try {
     results = await evaluateCommand(parsed!, DEFAULT_POLICY);
   } catch (err) {
+    // Fail open, but record the degradation so it isn't silent (see aih-security P0.2).
     process.stderr.write(`[supplyguard] evaluator error: ${err}\n`);
+    const sid = input!.session_id ?? null;
+    const proj = deriveProject(input!.cwd);
+    logDecision({
+      ecosystem: parsed!.ecosystem,
+      package: "(evaluator-error)",
+      decision: "allow",
+      totalScore: 0,
+      factors: [],
+      sessionId: sid,
+      project: proj,
+      command,
+      degraded: true,
+      degradedReason: String(err),
+    });
+    await flushTelemetry(
+      emitLog({
+        session_id: sid ?? undefined,
+        project: proj,
+        harness: "claude-code",
+        scanner_id: "pipeline/degraded",
+        event_type: "package_install",
+        decision: "allow",
+        severity: "warn",
+        degraded: true,
+      }),
+    );
     allow();
   }
 
